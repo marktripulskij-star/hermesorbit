@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Privacy Policy — Ultemir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a; --surface: #161616; --border: #2a2a2a;
+    --text: #f5f5f5; --text-2: #b5b5b5; --text-3: #888; --text-4: #5a5a5a;
+    --accent: #c5ff3d; --accent-on: #0a0a0a;
+    --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'Geist Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text-2); font-family: var(--font-sans); font-size: 15px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  .container { max-width: 760px; margin: 0 auto; padding: 80px 24px 120px; }
+  .topbar { display: flex; align-items: center; gap: 10px; padding: 18px 24px; border-bottom: 1px solid var(--border); }
+  .topbar .mark { width: 26px; height: 26px; border-radius: 6px; background: var(--accent); color: var(--accent-on); display: grid; place-items: center; font-weight: 800; letter-spacing: -0.04em; }
+  .topbar .name { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+  .topbar .home { margin-left: auto; font-size: 13px; color: var(--text-3); text-decoration: none; }
+  .topbar .home:hover { color: var(--accent); }
+  h1 { color: var(--text); font-size: 32px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 8px; }
+  .meta { color: var(--text-4); font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; margin-bottom: 40px; text-transform: uppercase; }
+  h2 { color: var(--text); font-size: 18px; font-weight: 600; letter-spacing: -0.01em; margin: 36px 0 10px; }
+  p { margin: 12px 0; }
+  ul { padding-left: 20px; margin: 8px 0 16px; }
+  li { margin: 6px 0; }
+  a { color: var(--accent); }
+  strong { color: var(--text); font-weight: 600; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+  .footer-note { font-size: 12px; color: var(--text-4); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="mark">U</div>
+  <div class="name">Ultemir</div>
+  <a class="home" href="/">← Back to home</a>
+</header>
+
+<main class="container">
+  <h1>Privacy Policy</h1>
+  <div class="meta">Last updated: May 2, 2026</div>
+
+  <p>This Privacy Policy explains how Ultemir ("we", "us", or "Ultemir") collects, uses, and shares information when you use our website at <a href="https://ultemir.com">ultemir.com</a> and our application at <a href="https://app.ultemir.com">app.ultemir.com</a> (the "Service").</p>
+
+  <p>By using the Service, you agree to the practices described here. If you do not agree, please don't use the Service.</p>
+
+  <h2>1. Information we collect</h2>
+
+  <p><strong>Account information.</strong> When you sign up, we collect your email address. Your password is stored as a one-way hash by our authentication provider (Supabase) — we never see or store the plaintext password.</p>
+
+  <p><strong>Project content.</strong> When you create a project, you provide content like brand documents (PDFs, text), website URLs, brand assets (logos, product photos), and other inputs. We store this content to operate the Service.</p>
+
+  <p><strong>Generated content.</strong> Ad copy, image prompts, and images that the Service generates on your behalf are stored on our infrastructure (hosted by Railway, Supabase, and Vercel) so you can access them.</p>
+
+  <p><strong>Usage data.</strong> We log API requests, model token usage, generated-image cost, error events, and timestamps. This is used to compute your credit balance, prevent abuse, and improve the Service.</p>
+
+  <p><strong>Payment information.</strong> If you subscribe or purchase credits, payment is processed by <strong>Stripe</strong>. We never see or store your card details. Stripe shares with us only: the subscription tier, billing email, last-four card digits, and payment status.</p>
+
+  <p><strong>Analytics.</strong> We use <strong>Vercel Analytics</strong> to count pageviews and understand traffic sources. This is privacy-friendly — no cookies or cross-site tracking.</p>
+
+  <h2>2. How we use information</h2>
+  <ul>
+    <li>To operate the Service (run AI generation, store outputs, track credits).</li>
+    <li>To process payments and manage subscriptions.</li>
+    <li>To enforce abuse prevention (rate limits, fraud detection).</li>
+    <li>To send you transactional emails (signup confirmation, password reset, payment receipts).</li>
+    <li>To debug errors and improve product quality.</li>
+  </ul>
+
+  <h2>3. Third parties we share with</h2>
+  <p>Your data is shared with the following service providers as part of operating Ultemir:</p>
+  <ul>
+    <li><strong>Supabase</strong> — authentication + Postgres database hosting.</li>
+    <li><strong>Railway</strong> — backend server hosting.</li>
+    <li><strong>Vercel</strong> — frontend + landing page hosting + analytics.</li>
+    <li><strong>OpenAI</strong> — text generation (GPT-4o for brief and angles) and image generation (gpt-image-2). Inputs and outputs may be processed by OpenAI per their terms.</li>
+    <li><strong>Anthropic</strong> — Claude (Sonnet for ad copy and art-director prompts; Haiku for self-critique and adjustments). Inputs and outputs may be processed by Anthropic per their terms.</li>
+    <li><strong>Stripe</strong> — payment processing.</li>
+    <li><strong>Higgsfield</strong> — used as an image storage CDN for brand reference images during generation. Optional — only used if uploads succeed.</li>
+  </ul>
+
+  <p>We don't sell your data to advertisers or data brokers.</p>
+
+  <h2>4. AI input and output handling</h2>
+  <p>To generate ads, we send your project content (brand brief, scraped website content, brand documents, images) to OpenAI and Anthropic via their APIs. <strong>We do not use your content to train AI models.</strong> Per OpenAI and Anthropic's API terms, your inputs are not used for model training by default when accessed through the API.</p>
+
+  <p>Generated outputs (ad copy, images) are returned to us, stored in your account, and shown to you. You retain the right to use those outputs as described in our Terms of Service.</p>
+
+  <h2>5. Cookies and similar technologies</h2>
+  <p>We use the minimum cookies needed to operate the Service:</p>
+  <ul>
+    <li>An authentication session token, set by Supabase, so you stay logged in.</li>
+    <li>A small set of preference cookies (e.g. theme, layout density) stored locally in your browser.</li>
+  </ul>
+  <p>We do not use advertising cookies or cross-site trackers.</p>
+
+  <h2>6. Data retention</h2>
+  <p>We retain your account and project data as long as your account is active. If you delete a project, the project's data (documents, brand assets, angles, ads) is deleted from our database. If you delete your account, all associated data is removed within 30 days, except where retention is required by law (e.g. payment records for tax purposes).</p>
+
+  <h2>7. Your rights</h2>
+  <p>You can:</p>
+  <ul>
+    <li>Access and download your account data — email us at <a href="mailto:cyrusvakil@ultemir.com">cyrusvakil@ultemir.com</a>.</li>
+    <li>Correct your account information by editing it in the app.</li>
+    <li>Delete a project at any time from your dashboard.</li>
+    <li>Delete your account by emailing us — we'll process it within 30 days.</li>
+  </ul>
+  <p>Depending on where you live (e.g. EU, UK, California), you may have additional rights under the GDPR, UK GDPR, or CCPA. To exercise them, contact us at the email above.</p>
+
+  <h2>8. Security</h2>
+  <p>All data is transmitted over HTTPS. Authentication uses signed JWTs verified against Supabase. Payment data is handled exclusively by Stripe (PCI Level 1 compliant). Database access is restricted via row-level security policies. We do our best to protect your data but no system is perfectly secure.</p>
+
+  <h2>9. International transfers</h2>
+  <p>Ultemir is operated from the United States. By using the Service, you understand that your data may be processed in the US and other countries where our service providers operate.</p>
+
+  <h2>10. Children</h2>
+  <p>Ultemir is not directed to children under 13, and we don't knowingly collect data from anyone under 13. If you believe we have, please contact us and we'll delete it.</p>
+
+  <h2>11. Changes to this policy</h2>
+  <p>We may update this Privacy Policy. If we make material changes, we'll notify you by email or with a notice in the app before the changes take effect. Continued use after the effective date means you accept the updated policy.</p>
+
+  <h2>12. Contact</h2>
+  <p>Questions about this policy or your data? Email <a href="mailto:cyrusvakil@ultemir.com">cyrusvakil@ultemir.com</a>.</p>
+
+  <hr/>
+  <p class="footer-note">© 2026 Ultemir. This document is provided for transparency. It is not legal advice.</p>
+</main>
+
+</body>
+</html>

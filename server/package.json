@@ -1,0 +1,28 @@
+{
+  "name": "ad-gen-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.91.1",
+    "@supabase/supabase-js": "^2.105.1",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.4.1",
+    "jsonrepair": "^3.14.0",
+    "multer": "^2.1.1",
+    "openai": "^6.35.0",
+    "pdf-parse": "^1.1.1",
+    "pdfjs-dist": "^5.7.284",
+    "pg": "^8.20.0",
+    "sharp": "^0.34.5",
+    "stripe": "^22.1.0"
+  }
+}

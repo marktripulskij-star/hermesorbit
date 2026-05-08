@@ -1,0 +1,689 @@
+.angle-grid-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.angle-filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.angle-filter-bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.angle-select-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.select-action-btn {
+  background: none;
+  border: 1px solid var(--border, #2a2a3e);
+  border-radius: 6px;
+  color: var(--text-muted, #888);
+  font-size: 12px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.select-action-btn:hover {
+  border-color: var(--accent, #7c5cfc);
+  color: var(--accent, #7c5cfc);
+}
+
+.angle-empty {
+  font-size: 13px;
+  color: var(--text-muted, #666);
+  text-align: center;
+  padding: 24px;
+  border: 1px dashed var(--border, #2a2a3e);
+  border-radius: 8px;
+}
+
+.filter-btn {
+  background: var(--surface, #1a1a2e);
+  border: 1px solid var(--border, #2a2a3e);
+  border-radius: 20px;
+  color: var(--text-muted, #888);
+  font-size: 12px;
+  padding: 4px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.filter-btn:hover {
+  border-color: var(--accent, #7c5cfc);
+  color: var(--text, #e0e0e0);
+}
+
+.filter-btn.active {
+  background: var(--accent, #7c5cfc);
+  border-color: var(--accent, #7c5cfc);
+  color: #fff;
+}
+
+.angle-selected-count {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--accent, #7c5cfc);
+  font-weight: 600;
+}
+
+.angle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.angle-card {
+  background: var(--surface, #1a1a2e);
+  border: 1.5px solid var(--border, #2a2a3e);
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  user-select: none;
+}
+
+.angle-card:hover {
+  border-color: var(--accent, #7c5cfc);
+  transform: translateY(-1px);
+}
+
+.angle-card.selected {
+  border-color: var(--accent, #7c5cfc);
+  background: rgba(124, 92, 252, 0.06);
+}
+
+.angle-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.funnel-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.funnel-tofu { background: rgba(74, 222, 128, 0.12); color: #4ade80; }
+.funnel-mofu { background: rgba(250, 204, 21, 0.12); color: #facc15; }
+.funnel-bofu { background: rgba(248, 113, 113, 0.12); color: #f87171; }
+
+.angle-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border, #333);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #fff;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.angle-check.checked {
+  background: var(--accent, #7c5cfc);
+  border-color: var(--accent, #7c5cfc);
+}
+
+.angle-avatar {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent, #7c5cfc);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.angle-pain {
+  font-size: 12px;
+  color: var(--text, #ccc);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.angle-insight {
+  font-size: 11px;
+  color: var(--text-muted, #888);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.4;
+  border-left: 2px solid var(--border, #333);
+  padding-left: 8px;
+}
+
+.angle-suggested-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border, #2a2a2a);
+}
+
+.angle-suggested-label {
+  font-family: var(--font-mono, monospace);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-4, #5a5a5a);
+  flex-shrink: 0;
+  padding-top: 3px;
+}
+
+.angle-suggested-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.angle-suggested-chip {
+  font-size: 10.5px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--surface-2, #1f1f1f);
+  border: 1px solid var(--border, #2a2a2a);
+  color: var(--text-3, #888);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.angle-suggested-chip.top {
+  background: var(--accent-dim, rgba(197,255,61,0.12));
+  border-color: var(--accent-dim-strong, rgba(197,255,61,0.25));
+  color: var(--accent, #c5ff3d);
+  font-weight: 600;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Batch action bar (top of grid when ≥1 selected)
+   ────────────────────────────────────────────────────────────────── */
+.angle-batch-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  /* Fully opaque — no backdrop-filter (it ghosts behind expanded cards
+     that create their own stacking context). */
+  background: var(--surface-2, #1f1f1f);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  /* Subtle shadow under the bar so the boundary is visible when stuck */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  /* GPU-promote so layout shifts (expanding cards) don't cause a jitter
+     frame where the bar appears at its non-stuck position */
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.angle-batch-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.angle-batch-spark { font-size: 14px; color: var(--accent, #c5ff3d); }
+
+.angle-batch-spin {
+  font-size: 14px; color: var(--accent, #c5ff3d);
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.angle-batch-status {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  color: var(--text-2, #b5b5b5);
+  letter-spacing: 0.02em;
+}
+
+.angle-batch-btn {
+  background: var(--accent, #c5ff3d);
+  color: var(--accent-on, #0a0a0a);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, opacity 0.15s;
+}
+.angle-batch-btn:hover:not(:disabled) { background: var(--accent-2, #a5e62a); }
+.angle-batch-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ──────────────────────────────────────────────────────────────────
+   Export bar — sits below the batch bar, surfaces only when there
+   are ads worth exporting. Two outline-style buttons (not lime,
+   reserved for the primary "Generate" CTA) so visual hierarchy
+   stays correct.
+   ────────────────────────────────────────────────────────────────── */
+.angle-export-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  background: var(--surface, #161616);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 8px;
+}
+
+.angle-export-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.angle-export-icon { font-size: 14px; }
+.angle-export-status {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  color: var(--text-2, #b5b5b5);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.angle-export-msg { color: var(--text-3, #888); }
+.angle-export-msg-success { color: var(--accent, #c5ff3d); }
+.angle-export-msg-warn    { color: #f0a04b; }
+.angle-export-msg-error   { color: var(--danger, #ff5c5c); }
+
+.angle-export-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.angle-export-btn {
+  background: transparent;
+  color: var(--text, #f0f0f0);
+  border: 1px solid var(--border-strong, #3a3a3a);
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+  white-space: nowrap;
+}
+.angle-export-btn:hover:not(:disabled) {
+  background: var(--surface-2, #1f1f1f);
+  border-color: var(--accent, #c5ff3d);
+}
+.angle-export-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Destructive variant — red border on hover, red text always. Same shape as
+   the export buttons so they line up visually, but unmistakably the
+   "this deletes things" action. */
+.angle-export-btn-danger { color: var(--danger, #ff5c5c); }
+.angle-export-btn-danger:hover:not(:disabled) {
+  background: rgba(255, 92, 92, 0.08);
+  border-color: var(--danger, #ff5c5c);
+  color: var(--danger, #ff5c5c);
+}
+
+/* Mobile: stack the export bar vertically below ~640px so the buttons
+   don't crush the status text. */
+@media (max-width: 640px) {
+  .angle-export-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .angle-export-right { justify-content: stretch; }
+  .angle-export-btn { flex: 1; text-align: center; }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Card stage / status pill (top-right corner)
+   ────────────────────────────────────────────────────────────────── */
+.angle-stage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--surface-2, #1f1f1f);
+  border: 1px solid var(--border, #2a2a2a);
+  color: var(--text-3, #888);
+  margin-left: auto;
+  margin-right: 8px;
+}
+
+.angle-stage-pill.stage-generating-copy,
+.angle-stage-pill.stage-generating-image {
+  background: rgba(250, 204, 21, 0.1);
+  border-color: rgba(250, 204, 21, 0.3);
+  color: var(--warn, #facc15);
+}
+.angle-stage-pill.stage-done {
+  background: rgba(74, 222, 128, 0.1);
+  border-color: rgba(74, 222, 128, 0.3);
+  color: var(--success, #4ade80);
+}
+.angle-stage-pill.stage-error {
+  background: rgba(248, 113, 113, 0.1);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: var(--danger, #f87171);
+}
+
+.angle-stage-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: currentColor;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Format dropdown row inside card
+   ────────────────────────────────────────────────────────────────── */
+.angle-format-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border, #2a2a2a);
+}
+
+.angle-format-label {
+  font-family: var(--font-mono, monospace);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-4, #5a5a5a);
+  flex-shrink: 0;
+}
+
+.angle-format-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.angle-format-select {
+  flex: 1;
+  background: var(--surface-2, #1f1f1f);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 5px;
+  color: var(--text, #f5f5f5);
+  font-size: 12px;
+  padding: 5px 8px;
+  cursor: pointer;
+  font-family: inherit;
+  outline: none;
+  min-width: 0;
+}
+.angle-format-select:focus { border-color: var(--accent, #c5ff3d); }
+.angle-format-select:hover { border-color: var(--border-strong, #3a3a3a); }
+
+.angle-suggested-tag {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--accent, #c5ff3d);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Generating / error / result strips
+   ────────────────────────────────────────────────────────────────── */
+.angle-gen-strip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px;
+  background: rgba(250, 204, 21, 0.05);
+  border: 1px solid rgba(250, 204, 21, 0.2);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--warn, #facc15);
+}
+
+.angle-gen-spinner {
+  width: 12px; height: 12px;
+  border: 2px solid rgba(250, 204, 21, 0.3);
+  border-top-color: var(--warn, #facc15);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.angle-error-strip {
+  padding: 8px 10px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 6px;
+  font-size: 11.5px;
+  color: var(--danger, #f87171);
+  word-break: break-word;
+}
+
+.angle-result-strip {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  background: var(--surface-2, #1f1f1f);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 6px;
+}
+
+.angle-result-thumb {
+  width: 72px; height: 72px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--surface, #161616);
+  flex-shrink: 0;
+}
+
+.angle-result-placeholder {
+  width: 72px; height: 72px;
+  display: grid; place-items: center;
+  border-radius: 4px;
+  background: var(--surface, #161616);
+  border: 1px dashed var(--border-strong, #3a3a3a);
+  font-size: 10px;
+  color: var(--text-4, #5a5a5a);
+  flex-shrink: 0;
+}
+
+.angle-result-meta {
+  flex: 1;
+  display: flex; flex-direction: column; gap: 6px;
+  min-width: 0;
+}
+
+.angle-result-headline {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text, #f5f5f5);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.angle-result-scores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.angle-mini-score {
+  font-family: var(--font-mono, monospace);
+  font-size: 9.5px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--surface, #161616);
+  border: 1px solid var(--border, #2a2a2a);
+  letter-spacing: 0.02em;
+}
+.angle-mini-score.good { color: var(--success, #4ade80); border-color: rgba(74,222,128,0.3); }
+.angle-mini-score.ok   { color: var(--warn, #facc15); border-color: rgba(250,204,21,0.3); }
+.angle-mini-score.bad  { color: var(--danger, #f87171); border-color: rgba(248,113,113,0.3); }
+
+/* ──────────────────────────────────────────────────────────────────
+   Card actions row (generate this one / open ad / retry)
+   ────────────────────────────────────────────────────────────────── */
+.angle-card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.angle-img-settings {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.angle-img-select {
+  background: var(--surface-2, #1f1f1f);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 5px;
+  color: var(--text-2, #b5b5b5);
+  font-family: var(--font-mono, monospace);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 4px 18px 4px 8px;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-4, #5a5a5a) 50%),
+    linear-gradient(135deg, var(--text-4, #5a5a5a) 50%, transparent 50%);
+  background-position:
+    calc(100% - 9px) 50%,
+    calc(100% - 5px) 50%;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+  transition: border-color 0.15s, color 0.15s;
+  min-width: 56px;
+  width: auto;
+}
+
+/* Quality select holds longer words ("Medium"); give it more headroom */
+.angle-img-select.quality {
+  min-width: 76px;
+}
+
+.angle-img-select:hover:not(:disabled) {
+  border-color: var(--border-strong, #3a3a3a);
+  color: var(--text, #f5f5f5);
+}
+
+.angle-img-select:focus {
+  border-color: var(--accent, #c5ff3d);
+  color: var(--text, #f5f5f5);
+}
+
+.angle-img-select:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.angle-card-action-btn {
+  background: transparent;
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 5px;
+  color: var(--text-2, #b5b5b5);
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.angle-card-action-btn:hover {
+  border-color: var(--accent, #c5ff3d);
+  color: var(--accent, #c5ff3d);
+}
+.angle-card-action-btn.primary {
+  background: var(--accent-dim, rgba(197,255,61,0.12));
+  border-color: var(--accent, #c5ff3d);
+  color: var(--accent, #c5ff3d);
+  font-weight: 600;
+}
+.angle-card-action-btn.primary:hover {
+  background: var(--accent-dim-strong, rgba(197,255,61,0.25));
+}
+
+/* Hide the dashed top border for cards that are generating or done so the
+   strip + dropdown sit cleaner */
+.angle-card.stage-generating-copy .angle-format-row,
+.angle-card.stage-generating-image .angle-format-row,
+.angle-card.stage-done .angle-format-row {
+  border-top: 1px solid var(--border, #2a2a2a);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Expanded card (renders AdBuilder inline)
+   ────────────────────────────────────────────────────────────────── */
+.angle-card.expanded {
+  grid-column: 1 / -1;
+  cursor: default;
+}
+.angle-card.expanded:hover { transform: none; }
+
+.angle-card-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.angle-expanded-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border, #2a2a2a);
+}

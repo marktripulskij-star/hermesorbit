@@ -1,0 +1,31 @@
+node_modules/
+dist/
+.DS_Store
+
+# Secrets — NEVER commit
+.env
+.env.local
+.env.production
+**/.env
+
+# Local server state
+server/sessions.json
+server/usage.json
+server/uploads/
+server/public/generated/
+
+# Build artifacts
+client/dist/
+marketing/dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+/tmp/adstudio-*.log
+
+# Dev-time screenshots
+marketing/uploads/

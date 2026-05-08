@@ -1,0 +1,156 @@
+.ad-adjust-panel {
+  margin: 10px 0 14px;
+  padding: 12px;
+  background: var(--surface-2, #1f1f1f);
+  border: 1px solid var(--accent-dim-strong, rgba(197,255,61,0.25));
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ad-adjust-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ad-adjust-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--accent, #c5ff3d);
+}
+
+.ad-adjust-close {
+  background: transparent;
+  border: none;
+  color: var(--text-4, #5a5a5a);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: inherit;
+  transition: color 0.15s, background 0.15s;
+}
+
+.ad-adjust-close:hover {
+  color: var(--danger, #f87171);
+  background: rgba(248,113,113,0.08);
+}
+
+.ad-adjust-input {
+  width: 100%;
+  background: var(--surface, #161616);
+  border: 1px solid var(--border, #2a2a3e);
+  border-radius: 5px;
+  color: var(--text, #f5f5f5);
+  font-family: inherit;
+  font-size: 12.5px;
+  padding: 8px 10px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.ad-adjust-input:focus {
+  border-color: var(--accent, #c5ff3d);
+}
+
+.ad-adjust-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.ad-adjust-suggestion {
+  background: transparent;
+  border: 1px solid var(--border, #2a2a3e);
+  border-radius: 999px;
+  color: var(--text-3, #888);
+  font-size: 10.5px;
+  padding: 3px 9px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.ad-adjust-suggestion:hover:not(:disabled) {
+  border-color: var(--accent, #c5ff3d);
+  color: var(--accent, #c5ff3d);
+}
+
+.ad-adjust-suggestion:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ad-adjust-err {
+  font-size: 11.5px;
+  color: var(--danger, #f87171);
+  padding: 5px 8px;
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.3);
+  border-radius: 4px;
+}
+
+.ad-adjust-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.ad-adjust-submit {
+  background: var(--accent, #c5ff3d);
+  color: var(--accent-on, #0a0a0a);
+  border: none;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.ad-adjust-submit:hover:not(:disabled) {
+  background: var(--accent-2, #a5e62a);
+}
+
+.ad-adjust-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ad-adjust-hint {
+  font-size: 10.5px;
+  color: var(--text-4, #5a5a5a);
+  font-family: var(--font-mono, monospace);
+}
+
+/* Trigger button — placed inline in AdBuilder header */
+.ad-adjust-trigger {
+  background: transparent;
+  border: 1px solid var(--accent-dim-strong, rgba(197,255,61,0.25));
+  border-radius: 5px;
+  color: var(--accent, #c5ff3d);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  margin-left: auto;
+}
+
+.ad-adjust-trigger:hover {
+  background: var(--accent-dim, rgba(197,255,61,0.12));
+  border-color: var(--accent, #c5ff3d);
+}
+
+.ad-adjust-trigger.open {
+  background: var(--accent-dim, rgba(197,255,61,0.12));
+  border-color: var(--accent, #c5ff3d);
+}

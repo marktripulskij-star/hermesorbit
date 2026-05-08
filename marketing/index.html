@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ultemir — Generate Meta ads your competitors wish they could</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<style>
+  :root {
+    /* Brand canvas (dark — default) */
+    --bg: #0a0a0a;
+    --surface: #161616;
+    --surface-2: #1f1f1f;
+    --border: #2a2a2a;
+    --border-strong: #3a3a3a;
+    --text: #f5f5f5;
+    --text-2: #b5b5b5;
+    --text-3: #888;
+    --text-4: #5a5a5a;
+
+    /* Accent (lime by default; tweakable) */
+    --accent: #c5ff3d;
+    --accent-2: #a5e62a;
+    --accent-dim: rgba(197, 255, 61, 0.12);
+    --accent-on: #0a0a0a; /* text color on accent buttons */
+
+    --success: #4ade80;
+    --warn: #facc15;
+    --danger: #f87171;
+
+    /* Density */
+    --gap: 28px;
+    --section-py: 140px;
+    --container: 1240px;
+
+    /* Type */
+    --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono: 'Geist Mono', ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, monospace;
+  }
+
+  [data-theme="light"] {
+    --bg: #fafaf7;
+    --surface: #ffffff;
+    --surface-2: #f3f3ee;
+    --border: #e6e6e0;
+    --border-strong: #d4d4cc;
+    --text: #0e0e0e;
+    --text-2: #3a3a3a;
+    --text-3: #6a6a6a;
+    --text-4: #a0a0a0;
+    --accent-on: #0a0a0a;
+  }
+
+  [data-density="compact"] {
+    --gap: 20px;
+    --section-py: 96px;
+  }
+  [data-density="comfortable"] {
+    --gap: 36px;
+    --section-py: 180px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection { background: var(--accent); color: var(--accent-on); }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+  .container { max-width: var(--container); margin: 0 auto; padding: 0 32px; }
+
+  /* Responsive grids — ensure no horizontal overflow */
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 60px; }
+  @media (max-width: 1100px) {
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; gap: 32px; }
+  }
+  @media (max-width: 640px) {
+    .grid-4, .grid-3 { grid-template-columns: 1fr; }
+    .container { padding: 0 20px; }
+  }
+
+  /* Subtle grid background for dark mode hero */
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 56px 56px;
+    background-position: -1px -1px;
+  }
+  [data-theme="light"] .grid-bg {
+    background-image:
+      linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px);
+  }
+
+  /* Tweaks panel host overrides — keep our own theme */
+  #__tweaks-host { color: #29261b; }
+</style>
+
+<script type="application/json" id="__tweak-defaults">
+{}
+</script>
+
+<script>
+  // EDITMODE block lives in the React file — see app.jsx
+</script>
+
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="components.jsx"></script>
+  <script type="text/babel" src="sections.jsx"></script>
+  <script type="text/babel" src="main.jsx"></script>
+</body>
+</html>

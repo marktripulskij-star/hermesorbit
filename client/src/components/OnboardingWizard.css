@@ -1,0 +1,355 @@
+/* Onboarding wizard — full-bleed dark overlay, single centered card.
+   Per DESIGN-BRIEF.md: confident, fast, magical — not "Welcome to Ultemir,
+   here's how to use our amazing tool." */
+
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: var(--bg, #0a0a0a);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.onboarding-card {
+  width: 100%;
+  max-width: 560px;
+  background: var(--surface, #161616);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 14px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+/* ── Header ────────────────────────────────────────────────────────── */
+.onboarding-head {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.onboarding-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.onboarding-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: var(--accent, #c5ff3d);
+  color: var(--accent-on, #0a0a0a);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: -0.04em;
+}
+
+.onboarding-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text, #f5f5f5);
+  letter-spacing: -0.02em;
+}
+
+.onboarding-step-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: var(--text-4, #5a5a5a);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.onboarding-step-num {
+  font-weight: 500;
+}
+
+.onboarding-close {
+  background: transparent;
+  border: none;
+  color: var(--text-4, #5a5a5a);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: inherit;
+  transition: color 120ms;
+}
+.onboarding-close:hover { color: var(--danger, #f87171); }
+
+.onboarding-progress {
+  display: flex;
+  gap: 6px;
+}
+
+.onboarding-progress-dot {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border, #2a2a2a);
+  transition: background 200ms;
+}
+
+.onboarding-progress-dot.active {
+  background: var(--accent, #c5ff3d);
+}
+
+.onboarding-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text, #f5f5f5);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+/* ── Body ───────────────────────────────────────────────────────────── */
+.onboarding-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.onboarding-helper {
+  font-size: 13.5px;
+  color: var(--text-3, #888);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.onboarding-section-label {
+  font-family: var(--font-mono, monospace);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-4, #5a5a5a);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
+/* ── Inputs ─────────────────────────────────────────────────────────── */
+.onboarding-input {
+  width: 100%;
+  background: var(--surface-2, #1f1f1f);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 8px;
+  color: var(--text, #f5f5f5);
+  font-size: 15px;
+  padding: 12px 14px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 120ms;
+}
+.onboarding-input:focus {
+  border-color: var(--accent, #c5ff3d);
+}
+.onboarding-input::placeholder {
+  color: var(--text-4, #5a5a5a);
+}
+.onboarding-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.onboarding-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.onboarding-input-row .onboarding-input {
+  flex: 1;
+}
+
+/* ── Action row ─────────────────────────────────────────────────────── */
+.onboarding-action-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.onboarding-skip {
+  background: transparent;
+  border: none;
+  color: var(--text-3, #888);
+  font-size: 12.5px;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 6px 10px;
+  border-radius: 5px;
+  transition: color 120ms;
+}
+.onboarding-skip:hover { color: var(--text, #f5f5f5); }
+
+/* ── Error row ──────────────────────────────────────────────────────── */
+.onboarding-error {
+  padding: 9px 12px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 6px;
+  font-size: 12.5px;
+  color: var(--danger, #f87171);
+  word-break: break-word;
+}
+
+/* ── Step 2: scrape progress ────────────────────────────────────────── */
+.onboarding-progress-feed {
+  background: var(--surface-2, #1f1f1f);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11.5px;
+  color: var(--text-3, #888);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 130px;
+  overflow-y: auto;
+}
+
+.onboarding-progress-line {
+  line-height: 1.45;
+}
+
+.onboarding-summary {
+  padding: 10px 12px;
+  background: var(--accent-dim, rgba(197, 255, 61, 0.12));
+  border: 1px solid var(--accent-dim-strong, rgba(197, 255, 61, 0.25));
+  border-radius: 6px;
+  font-size: 12.5px;
+  color: var(--accent, #c5ff3d);
+  font-weight: 500;
+  font-family: var(--font-mono, monospace);
+}
+
+/* ── Step 3: drop zones ─────────────────────────────────────────────── */
+.onboarding-dropzones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.onboarding-drop {
+  background: var(--surface-2, #1f1f1f);
+  border: 1.5px dashed var(--border-strong, #3a3a3a);
+  border-radius: 8px;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 160ms ease;
+  min-height: 110px;
+  gap: 4px;
+}
+
+.onboarding-drop:hover,
+.onboarding-drop.drag {
+  border-color: var(--accent, #c5ff3d);
+  background: var(--accent-dim, rgba(197, 255, 61, 0.06));
+}
+
+.onboarding-drop.has-file {
+  border-color: var(--accent, #c5ff3d);
+  border-style: solid;
+}
+
+.onboarding-drop-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2, #b5b5b5);
+  letter-spacing: 0.02em;
+}
+
+.onboarding-drop-file {
+  font-size: 12px;
+  color: var(--accent, #c5ff3d);
+  font-weight: 500;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.onboarding-drop-hint {
+  font-size: 12.5px;
+  color: var(--text-3, #888);
+  font-weight: 500;
+}
+
+.onboarding-drop-sub {
+  font-size: 11px;
+  color: var(--text-4, #5a5a5a);
+  line-height: 1.4;
+}
+
+/* ── Step 4: multi-file drop + tags ─────────────────────────────────── */
+.onboarding-drop-multi {
+  min-height: 80px;
+}
+
+.onboarding-drop-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  width: 100%;
+}
+
+.onboarding-drop-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  background: var(--surface, #161616);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 999px;
+  padding: 3px 5px 3px 10px;
+  color: var(--text-2, #b5b5b5);
+}
+
+/* ── Step 5: building ───────────────────────────────────────────────── */
+.onboarding-building {
+  align-items: center;
+  text-align: center;
+}
+
+.onboarding-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border, #2a2a2a);
+  border-top-color: var(--accent, #c5ff3d);
+  border-radius: 50%;
+  animation: onboarding-spin 0.85s linear infinite;
+  margin: 6px auto 0;
+}
+
+@keyframes onboarding-spin { to { transform: rotate(360deg); } }
+
+.onboarding-build-log {
+  width: 100%;
+  background: var(--surface-2, #1f1f1f);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  color: var(--text-2, #b5b5b5);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  min-height: 80px;
+}
+
+.onboarding-build-line {
+  line-height: 1.5;
+}
