@@ -4,9 +4,13 @@ dist/
 
 # Secrets — NEVER commit
 .env
+.env*
+!.env.example
+!**/.env.example
 .env.local
 .env.production
 **/.env
+**/.env*
 
 # Local server state
 server/sessions.json
