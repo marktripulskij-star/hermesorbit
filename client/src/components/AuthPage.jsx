@@ -45,13 +45,9 @@ export default function AuthPage() {
       <div style={{ width: '100%', maxWidth: 380 }}>
         {/* Brand mark */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24, justifyContent: 'center' }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: 8,
-            background: 'var(--accent)',
-            display: 'grid', placeItems: 'center',
-            color: 'var(--accent-on)', fontWeight: 800, fontSize: 18,
-            letterSpacing: '-0.04em',
-          }}>H</div>
+          <img src="/hermes-logo.png" alt="" style={{
+            width: 34, height: 34, borderRadius: 8, objectFit: 'cover',
+          }} />
           <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', letterSpacing: '-0.02em' }}>Hermes</span>
         </div>
 

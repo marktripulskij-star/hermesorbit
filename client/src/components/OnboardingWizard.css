@@ -43,13 +43,8 @@
   width: 28px;
   height: 28px;
   border-radius: 7px;
-  background: var(--accent, #c5ff3d);
-  color: var(--accent-on, #0a0a0a);
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  font-size: 16px;
-  letter-spacing: -0.04em;
+  object-fit: cover;
+  display: block;
 }
 
 .onboarding-name {

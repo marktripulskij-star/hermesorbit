@@ -53,12 +53,9 @@ export default function ProjectList() {
         padding: '18px 32px', borderBottom: '1px solid var(--border)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{
-            width: 28, height: 28, borderRadius: 7,
-            background: 'var(--accent)', color: 'var(--accent-on)',
-            display: 'grid', placeItems: 'center',
-            fontWeight: 800, fontSize: 16, letterSpacing: '-0.04em',
-          }}>H</div>
+          <img src="/hermes-logo.png" alt="" style={{
+            width: 30, height: 30, borderRadius: 7, objectFit: 'cover',
+          }} />
           <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', letterSpacing: '-0.02em' }}>Hermes</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>

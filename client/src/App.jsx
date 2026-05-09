@@ -588,7 +588,7 @@ export default function App({ sessionId: propSessionId }) {
     <div className="app-layout" translate="no" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false">
       <header className="app-header">
         <div className="header-title">
-          <span className="logo">✦</span>
+          <img className="logo" src="/hermes-logo.png" alt="" />
           <span>Hermes</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

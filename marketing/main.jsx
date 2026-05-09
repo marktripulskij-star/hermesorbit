@@ -3,10 +3,12 @@
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "theme": "dark",
   "density": "regular",
-  "accent": "lime"
+  "accent": "orbit"
 }/*EDITMODE-END*/;
 
 const ACCENTS = {
+  orbit:   { dark: { a: '#55d6e0', a2: '#2f7dff', dim: 'rgba(85,214,224,0.12)', on: '#0a0a0a' },
+             light:{ a: '#0f74c9', a2: '#2558ff', dim: 'rgba(15,116,201,0.12)', on: '#ffffff' } },
   lime:    { dark: { a: '#c5ff3d', a2: '#a5e62a', dim: 'rgba(197,255,61,0.12)', on: '#0a0a0a' },
              light:{ a: '#7cc814', a2: '#69ad0d', dim: 'rgba(124,200,20,0.12)', on: '#ffffff' } },
   electric:{ dark: { a: '#7cf0ff', a2: '#5ad6e8', dim: 'rgba(124,240,255,0.12)', on: '#0a0a0a' },
@@ -21,7 +23,7 @@ function applyTweaks(t) {
   const root = document.documentElement;
   root.dataset.theme = t.theme;
   root.dataset.density = t.density;
-  const a = ACCENTS[t.accent]?.[t.theme] || ACCENTS.lime.dark;
+  const a = ACCENTS[t.accent]?.[t.theme] || ACCENTS.orbit.dark;
   root.style.setProperty('--accent', a.a);
   root.style.setProperty('--accent-2', a.a2);
   root.style.setProperty('--accent-dim', a.dim);
@@ -55,7 +57,8 @@ function App() {
           onChange={(v) => setTweak('theme', v)} />
         <TweakSelect label="Accent" value={t.accent}
           options={[
-            { value: 'lime', label: 'Lime (default)' },
+            { value: 'orbit', label: 'Orbit cyan (default)' },
+            { value: 'lime', label: 'Lime' },
             { value: 'electric', label: 'Electric blue' },
             { value: 'ember', label: 'Ember orange' },
             { value: 'iris', label: 'Iris purple' },

@@ -1,7 +1,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* Ultemir design system — dark default. Tokens match marketing site exactly. */
+  /* Hermes design system — dark default. Tokens match marketing site exactly. */
   --bg: #0a0a0a;
   --surface: #161616;
   --surface-2: #1f1f1f;
@@ -16,11 +16,11 @@
   --text-muted: #888;              /* alias */
   --muted: #888;                   /* alias */
 
-  --accent: #c5ff3d;               /* electric lime — single accent */
-  --accent-2: #a5e62a;
-  --accent2: #a5e62a;              /* alias */
-  --accent-dim: rgba(197, 255, 61, 0.12);
-  --accent-dim-strong: rgba(197, 255, 61, 0.25);
+  --accent: #55d6e0;               /* logo cyan */
+  --accent-2: #2f7dff;
+  --accent2: #2f7dff;              /* alias */
+  --accent-dim: rgba(85, 214, 224, 0.12);
+  --accent-dim-strong: rgba(85, 214, 224, 0.25);
   --accent-on: #0a0a0a;            /* text color on accent buttons */
 
   /* Status — for funnel badges + score chips only, never for chrome */
@@ -53,11 +53,11 @@
   --text-2: #3a3a3a;
   --text-3: #6a6a6a;
   --text-4: #a0a0a0;
-  --accent: #7cc814;
-  --accent-2: #69ad0d;
-  --accent2: #69ad0d;
-  --accent-dim: rgba(124, 200, 20, 0.12);
-  --accent-dim-strong: rgba(124, 200, 20, 0.25);
+  --accent: #0f74c9;
+  --accent-2: #2558ff;
+  --accent2: #2558ff;
+  --accent-dim: rgba(15, 116, 201, 0.12);
+  --accent-dim-strong: rgba(15, 116, 201, 0.25);
   --accent-on: #ffffff;
 }
 

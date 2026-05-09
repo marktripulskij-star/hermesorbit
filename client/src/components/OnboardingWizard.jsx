@@ -315,7 +315,7 @@ function Header({ step, stepIndex, total, onClose }) {
   return (
     <div className="onboarding-head">
       <div className="onboarding-brand">
-        <div className="onboarding-mark">H</div>
+        <img className="onboarding-mark" src="/hermes-logo.png" alt="" />
         <span className="onboarding-name">Hermes</span>
       </div>
       <div className="onboarding-step-meta">
