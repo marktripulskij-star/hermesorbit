@@ -133,7 +133,7 @@ export async function downloadAllImages(ads, angles, formats, brandName = '') {
   }
 
   const zipBlob = await zip.generateAsync({ type: 'blob' })
-  const fname = `${slugify(brandName) || 'ultemir'}-images-${dateStamp()}.zip`
+  const fname = `${slugify(brandName) || 'hermes'}-images-${dateStamp()}.zip`
   triggerDownload(zipBlob, fname)
   return { downloaded, failed }
 }
@@ -171,7 +171,7 @@ export function exportCopyAsPdf(ads, angles, formats, brandName = '') {
 
   // ── Header
   doc.setFont('helvetica', 'bold').setFontSize(20)
-  doc.text(`${brandName || 'Ultemir'} — Ad Copy`, margin, y)
+  doc.text(`${brandName || 'Hermes'} — Ad Copy`, margin, y)
   y += 24
   doc.setFont('helvetica', 'normal').setFontSize(10).setTextColor(120)
   doc.text(`${copyBundles.length} ads · exported ${new Date().toLocaleDateString()}`, margin, y)
@@ -245,7 +245,7 @@ export function exportCopyAsPdf(ads, angles, formats, brandName = '') {
     y += 18
   }
 
-  const fname = `${slugify(brandName) || 'ultemir'}-copy-${dateStamp()}.pdf`
+  const fname = `${slugify(brandName) || 'hermes'}-copy-${dateStamp()}.pdf`
   doc.save(fname)
   return { written: copyBundles.length }
 }

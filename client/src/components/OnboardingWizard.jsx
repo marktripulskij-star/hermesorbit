@@ -315,8 +315,8 @@ function Header({ step, stepIndex, total, onClose }) {
   return (
     <div className="onboarding-head">
       <div className="onboarding-brand">
-        <div className="onboarding-mark">U</div>
-        <span className="onboarding-name">Ultemir</span>
+        <div className="onboarding-mark">H</div>
+        <span className="onboarding-name">Hermes</span>
       </div>
       <div className="onboarding-step-meta">
         <span className="onboarding-step-num">Step {stepIndex + 1} of {total}</span>

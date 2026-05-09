@@ -4,8 +4,8 @@ const { useState: useS, useEffect: useE, useRef: useR, useMemo: useM } = React;
 
 // Where all "Sign up / Login / Start free trial" CTAs point. The app's
 // AuthGate handles whether to show login or signup based on session state.
-const APP_URL = 'https://app.ultemir.com';
-const FOUNDER_EMAIL = 'cyrusvakil@ultemir.com';
+const APP_URL = 'https://app.hermesorbit.com';
+const FOUNDER_EMAIL = 'support@hermesorbit.com';
 
 // ── Nav ──────────────────────────────────────────────────────────────────
 function Nav() {
@@ -134,7 +134,7 @@ function Hero() {
 // rendered ad output on the right. Loops every ~12s.
 function HeroDemo() {
   const STEPS = [
-    { t: 0,    line: '$ ultemir generate --angle "tired-of-greasy" --format hook-stat' },
+    { t: 0,    line: '$ hermes generate --angle "tired-of-greasy" --format hook-stat' },
     { t: 600,  line: '✓ Loaded brief: Maren Skin · 14 products · 7 avatars' },
     { t: 1200, line: '→ Drafting hook (gpt-4o)…' },
     { t: 2400, line: '✓ Hook: "Your moisturizer is making it worse."' },
@@ -386,7 +386,7 @@ function FounderStory() {
             had actually spent money testing ads and watching what failed.
           </p>
           <p>
-            So I built Ultemir around the workflow I wanted myself. It takes in your
+            So I built Hermes around the workflow I wanted myself. It takes in your
             site, product, and brand context, builds a real creative brief, finds
             angles worth testing, writes the ads, critiques them, and rewrites the
             weak ones before you waste budget on them.
@@ -406,7 +406,7 @@ function FounderStory() {
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--accent)', display: 'block', marginBottom: 6, letterSpacing: '0.05em' }}>
               WHAT'S DIFFERENT
             </span>
-            Ultemir does not just generate copy. It researches, writes, scores, and
+            Hermes does not just generate copy. It researches, writes, scores, and
             improves every ad so you can spend less time fixing AI slop and more
             time testing creatives.
           </div>
@@ -948,7 +948,7 @@ function FAQ() {
           </h2>
           <p style={{ color: 'var(--text-2)', fontSize: 15, lineHeight: 1.55, margin: 0 }}>
             Still on the fence? Email{' '}
-            <a href="mailto:cyrusvakil@ultemir.com" style={{ color: 'var(--accent)' }}>cyrusvakil@ultemir.com</a>{' '}
+            <a href="mailto:support@hermesorbit.com" style={{ color: 'var(--accent)' }}>support@hermesorbit.com</a>{' '}
             — replies usually under 4 hours.
           </p>
         </div>
@@ -1027,7 +1027,7 @@ function FinalCTA() {
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 32 }}>
           <Btn variant="primary" size="lg" href={APP_URL}>Start free trial →</Btn>
-          <Btn variant="soft" size="lg" href={`mailto:${FOUNDER_EMAIL}?subject=Ultemir%20walkthrough`}>Book a 15-min walkthrough</Btn>
+          <Btn variant="soft" size="lg" href={`mailto:${FOUNDER_EMAIL}?subject=Hermes%20walkthrough`}>Book a 15-min walkthrough</Btn>
         </div>
       </div>
     </section>
@@ -1086,7 +1086,7 @@ function Footer() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         fontSize: 12.5, color: 'var(--text-4)',
       }}>
-        <span>© 2026 Ultemir, Inc.</span>
+        <span>© 2026 Hermes, Inc.</span>
         <span style={{ fontFamily: 'var(--font-mono)' }}>v0.18.2 · build a4f1c0</span>
       </div>
     </footer>

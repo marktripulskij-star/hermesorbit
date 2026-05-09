@@ -589,7 +589,7 @@ export default function App({ sessionId: propSessionId }) {
       <header className="app-header">
         <div className="header-title">
           <span className="logo">✦</span>
-          <span>Ad Studio</span>
+          <span>Hermes</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <CreditPill />

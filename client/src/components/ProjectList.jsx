@@ -58,8 +58,8 @@ export default function ProjectList() {
             background: 'var(--accent)', color: 'var(--accent-on)',
             display: 'grid', placeItems: 'center',
             fontWeight: 800, fontSize: 16, letterSpacing: '-0.04em',
-          }}>U</div>
-          <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', letterSpacing: '-0.02em' }}>Ultemir</span>
+          }}>H</div>
+          <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', letterSpacing: '-0.02em' }}>Hermes</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           {me?.isAdmin && (

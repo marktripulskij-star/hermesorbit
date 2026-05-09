@@ -51,8 +51,8 @@ export default function AuthPage() {
             display: 'grid', placeItems: 'center',
             color: 'var(--accent-on)', fontWeight: 800, fontSize: 18,
             letterSpacing: '-0.04em',
-          }}>U</div>
-          <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', letterSpacing: '-0.02em' }}>Ultemir</span>
+          }}>H</div>
+          <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', letterSpacing: '-0.02em' }}>Hermes</span>
         </div>
 
         <Card padding={24}>

@@ -6,14 +6,14 @@ const { useState, useEffect, useRef, useMemo } = React;
 function Logo({ size = 22, withWord = true }) {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10, lineHeight: 1 }}>
-      <img src="assets/logo.png" alt="Ultemir"
+      <img src="assets/logo.png" alt="Hermes"
         width={size} height={size}
         style={{ width: size, height: size, display: 'block', objectFit: 'contain' }} />
       {withWord && (
         <span style={{
           fontSize: size * 0.78, fontWeight: 600, letterSpacing: '-0.02em',
           color: 'var(--text)'
-        }}>Ultemir</span>
+        }}>Hermes</span>
       )}
     </span>
   );
