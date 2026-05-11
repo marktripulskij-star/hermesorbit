@@ -5,6 +5,6 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "rewrites": [
-    { "source": "/((?!assets/|sitemap\\.xml|robots\\.txt).*)", "destination": "/index.html" }
+    { "source": "/((?!assets/|sitemap\\.xml|robots\\.txt|ai-meta-ad-generator/).*)", "destination": "/index.html" }
   ]
 }
