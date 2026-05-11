@@ -1027,6 +1027,120 @@ function imageFileLooksValid(file) {
   return false
 }
 
+function isProductAsset(asset) {
+  return asset && (asset.type === 'product' || asset.type === 'lifestyle')
+}
+
+function publicBrandImage(asset) {
+  return {
+    name: asset.name,
+    type: asset.type,
+    colors: asset.colors,
+    dataUrl: asset.dataUrl,
+    higgsfieldUrl: asset.higgsfieldUrl || null,
+  }
+}
+
+function getSelectedProductAsset(session, predicate = () => true) {
+  return getSelectedProductAssets(session, predicate)[0] || null
+}
+
+function getSelectedProductAssets(session, predicate = () => true) {
+  const images = Array.isArray(session.brandImages) ? session.brandImages : []
+  const selectedNames = Array.isArray(session.selectedProductNames)
+    ? session.selectedProductNames
+    : session.selectedProductName ? [session.selectedProductName] : []
+  const selected = selectedNames
+    .map(name => images.find(a => a.name === name && isProductAsset(a) && predicate(a)))
+    .filter(Boolean)
+  if (selected.length) return selected
+  const fallback = images.find(a => isProductAsset(a) && predicate(a))
+  return fallback ? [fallback] : []
+}
+
+function ensureSelectedProduct(session) {
+  const images = Array.isArray(session.brandImages) ? session.brandImages : []
+  const selectedNames = Array.isArray(session.selectedProductNames)
+    ? session.selectedProductNames
+    : session.selectedProductName ? [session.selectedProductName] : []
+  const validNames = selectedNames.filter((name, i, arr) =>
+    typeof name === 'string'
+    && arr.indexOf(name) === i
+    && images.some(a => a.name === name && isProductAsset(a))
+  )
+  session.selectedProductNames = validNames
+  session.selectedProductName = session.selectedProductNames[0] || null
+  return session.selectedProductNames
+    .map(name => images.find(a => a.name === name && isProductAsset(a)))
+    .filter(Boolean)
+}
+
+function selectedProductResponse(session) {
+  return {
+    selectedProductName: session.selectedProductName || null,
+    selectedProductNames: session.selectedProductNames || [],
+  }
+}
+
+function selectedProductLabel(products) {
+  if (!products.length) return 'uploaded product'
+  return products.map(p => `"${p.name}"`).join(', ')
+}
+
+const OFFER_FORMAT_IDS = new Set(['deal_stack', 'limited_time', 'bundle_bogo'])
+
+function uniqueStrings(values) {
+  return [...new Set((values || []).filter(v => typeof v === 'string').map(v => v.trim()).filter(Boolean))]
+}
+
+function activeOffers(session) {
+  return uniqueStrings([
+    ...(session.manualOffers || []),
+    ...(session.brandBrief?.currentOffers || []),
+  ])
+}
+
+function ensureSelectedOffers(session) {
+  const offers = activeOffers(session)
+  session.selectedOfferNames = uniqueStrings(session.selectedOfferNames || []).filter(offer => offers.includes(offer))
+  return session.selectedOfferNames
+}
+
+function patchBriefOffers(session) {
+  if (!session.brandBrief || typeof session.brandBrief !== 'object') return
+  session.brandBrief.currentOffers = activeOffers(session)
+}
+
+function formatUsesOffers(format) {
+  return !!format && (OFFER_FORMAT_IDS.has(format.id) || /deal|offer|bundle|bogo|limited/i.test(`${format.name} ${format.description}`))
+}
+
+function selectedOffersForFormat(session, format) {
+  if (!formatUsesOffers(format)) return []
+  const selected = ensureSelectedOffers(session)
+  return selected.length ? selected : activeOffers(session)
+}
+
+function adultSafeAvatarLabel(value) {
+  const raw = String(value || '').trim()
+  if (!raw) return raw
+  return raw
+    .replace(/\byoung\s+student\b/gi, 'Adult college student')
+    .replace(/\bstudent\b/gi, (match, offset, str) => {
+      const before = str.slice(Math.max(0, offset - 30), offset)
+      return /\b(adult|college|university|21\+|18\+)\s+$/i.test(before) ? match : 'adult college student'
+    })
+    .replace(/\bteen(?:ager)?s?\b/gi, 'adult customer')
+    .replace(/\bhigh\s*school(?:er| student)?s?\b/gi, 'adult college student')
+    .replace(/\bminor(?:s)?\b/gi, 'adult customer')
+    .replace(/\byoung\s+(woman|man|professional|customer|shopper|consumer)\b/gi, 'Adult $1')
+}
+
+function normalizeAngleSafety(angle) {
+  if (!angle || typeof angle !== 'object') return angle
+  return { ...angle, avatar: adultSafeAvatarLabel(angle.avatar) }
+}
+
 // Upload brand images (logo, product photos, lifestyle)
 app.post('/api/brand-assets', requireAuth, upload.array('files'), async (req, res) => {
   try {
@@ -1096,12 +1210,14 @@ app.post('/api/brand-assets', requireAuth, upload.array('files'), async (req, re
       added.push({ name: file.originalname, colors, type: asset.type, dataUrl, higgsfieldUrl })
       try { fs.unlinkSync(file.path) } catch (_) {}
     }
+    ensureSelectedProduct(session)
     await saveSession(sessionId, session)
     res.json({
       sessionId,
       added,
       brandColors: session.brandColors,
-      brandImages: session.brandImages.map(a => ({ name: a.name, type: a.type, colors: a.colors, dataUrl: a.dataUrl, higgsfieldUrl: a.higgsfieldUrl || null }))
+      brandImages: session.brandImages.map(publicBrandImage),
+      ...selectedProductResponse(session),
     })
   } catch (e) {
     console.error('brand-assets error:', e)
@@ -1136,6 +1252,11 @@ app.delete('/api/brand-assets/:sessionId/:name', requireAuth, async (req, res) =
   if (!await requireSessionOwnership(req, res, sessionId)) return
   const session = await getSession(sessionId)
   session.brandImages = session.brandImages.filter(a => a.name !== req.params.name)
+  if (session.selectedProductName === req.params.name) session.selectedProductName = null
+  if (Array.isArray(session.selectedProductNames)) {
+    session.selectedProductNames = session.selectedProductNames.filter(name => name !== req.params.name)
+  }
+  ensureSelectedProduct(session)
   // Recompute palette from remaining images
   session.brandColors = []
   for (const asset of session.brandImages) {
@@ -1146,7 +1267,11 @@ app.delete('/api/brand-assets/:sessionId/:name', requireAuth, async (req, res) =
     }
   }
   await saveSession(sessionId, session)
-  res.json({ brandColors: session.brandColors, brandImages: session.brandImages.map(a => ({ name: a.name, type: a.type, colors: a.colors, dataUrl: a.dataUrl, higgsfieldUrl: a.higgsfieldUrl || null })) })
+  res.json({
+    brandColors: session.brandColors,
+    brandImages: session.brandImages.map(publicBrandImage),
+    ...selectedProductResponse(session),
+  })
 })
 
 // Update the type of a brand image (logo / product / lifestyle)
@@ -1161,8 +1286,56 @@ app.patch('/api/brand-assets/:sessionId/:name/type', requireAuth, async (req, re
   const asset = session.brandImages.find(a => a.name === req.params.name)
   if (!asset) return res.status(404).json({ error: 'Asset not found' })
   asset.type = type
+  ensureSelectedProduct(session)
   await saveSession(sessionId, session)
-  res.json({ ok: true, type })
+  res.json({
+    ok: true,
+    type,
+    brandColors: session.brandColors,
+    brandImages: session.brandImages.map(publicBrandImage),
+    ...selectedProductResponse(session),
+  })
+})
+
+app.post('/api/selected-products', requireAuth, async (req, res) => {
+  const { sessionId } = req.body
+  if (!await requireSessionOwnership(req, res, sessionId)) return
+  const session = await getSession(sessionId)
+  const productNames = Array.isArray(req.body.productNames)
+    ? req.body.productNames.map(name => String(name).trim()).filter(Boolean)
+    : typeof req.body.productName === 'string' ? [req.body.productName.trim()].filter(Boolean) : []
+
+  for (const name of productNames) {
+    const asset = session.brandImages.find(a => a.name === name)
+    if (!asset || !isProductAsset(asset)) {
+      return res.status(400).json({ error: 'Choose uploaded product images.' })
+    }
+  }
+
+  session.selectedProductNames = productNames.filter((name, i, arr) => arr.indexOf(name) === i)
+  ensureSelectedProduct(session)
+  await saveSession(sessionId, session)
+  res.json(selectedProductResponse(session))
+})
+
+app.post('/api/selected-product', requireAuth, async (req, res) => {
+  const { sessionId } = req.body
+  if (!await requireSessionOwnership(req, res, sessionId)) return
+  const session = await getSession(sessionId)
+  const productName = typeof req.body.productName === 'string' ? req.body.productName.trim() : ''
+  const productNames = productName ? [productName] : []
+
+  if (productName) {
+    const asset = session.brandImages.find(a => a.name === productName)
+    if (!asset || !isProductAsset(asset)) {
+      return res.status(400).json({ error: 'Choose an uploaded product image.' })
+    }
+  }
+
+  session.selectedProductNames = productNames
+  ensureSelectedProduct(session)
+  await saveSession(sessionId, session)
+  res.json(selectedProductResponse(session))
 })
 
 // Set brand name
@@ -1223,7 +1396,8 @@ app.get('/api/brand-assets/:sessionId', requireAuth, async (req, res) => {
   const session = await getSession(req.params.sessionId)
   res.json({
     brandColors: session.brandColors,
-    brandImages: session.brandImages.map(a => ({ name: a.name, type: a.type, colors: a.colors, dataUrl: a.dataUrl, higgsfieldUrl: a.higgsfieldUrl || null }))
+    brandImages: session.brandImages.map(publicBrandImage),
+    ...selectedProductResponse(session),
   })
 })
 
@@ -1362,7 +1536,7 @@ app.post('/api/generate-images', requireAuth, async (req, res) => {
   }
 
   // Prefer product image as reference; fall back to any image with a Higgsfield URL
-  const productAsset = session.brandImages.find(a => a.type === 'product' && a.higgsfieldUrl)
+  const productAsset = getSelectedProductAsset(session, a => a.higgsfieldUrl)
     || session.brandImages.find(a => a.higgsfieldUrl)
   const referenceImageUrl = productAsset?.higgsfieldUrl || null
 
@@ -1569,6 +1743,8 @@ Return valid JSON only. No prose, no markdown fences.`,
     return completion.choices[0].message.content
    })
     session.brandBrief = brief
+    patchBriefOffers(session)
+    ensureSelectedOffers(session)
     await saveSession(sessionId, session)
     res.json({ brandBrief: brief })
   } catch (e) {
@@ -1763,6 +1939,10 @@ app.post('/api/generate-angles', requireAuth, async (req, res) => {
   if (!session.brandBrief) return res.status(400).json({ error: 'Generate brand brief first.' })
 
   const brief = JSON.stringify(session.brandBrief, null, 2)
+  const selectedProducts = ensureSelectedProduct(session)
+  const targetProductContext = selectedProducts.length
+    ? `\n\nTARGET PRODUCTS FOR THIS ANGLE SET:\nThe user selected ${selectedProductLabel(selectedProducts)} as the product(s) these angles are for. Generate angles specifically for this selected product set. If multiple products are selected, treat them as a bundle, kit, routine, or complementary offer when it makes sense.\n${selectedProducts.map(p => `- ${p.name}: extracted colors ${(p.colors || []).slice(0, 5).map(c => c.hex).join(', ') || 'not available'}`).join('\n')}`
+    : ''
 
   // Compact format catalog the model uses to pick suggestedFormatIds per angle.
   // One line per format: id, funnel, name, 1-line intent. Cheap (~600 tokens).
@@ -1797,6 +1977,7 @@ USE EVERY PART OF THE BRIEF. The brief gives you:
 RULES:
 - Be SPECIFIC. Not "back pain" — "the throbbing ache under her shoulder blade that starts at 11am and ruins her afternoon"
 - No two angles target the same avatar + desire combination
+- All avatars MUST be adults. Never use "young student", "teen", "high schooler", "minor", "kid", "child", "girl", or "boy". Use adult-safe labels like "Adult college student", "University student, 21+", or "Adult young professional".
 - Cover the full funnel: 8 TOFU, 7 MOFU, 5 BOFU
 - Each string under 120 characters. insightLine is one punchy sentence.
 - Distribute across the avatars: with 5-7 avatars and 20 angles, no single avatar should claim more than 5 angles.
@@ -1817,7 +1998,7 @@ Return JSON object: { "angles": [ array of exactly 20 objects with keys: id, ava
         },
         {
           role: 'user',
-          content: `BRAND BRIEF:\n${brief}\n\nGenerate exactly 20 unique, specific, testable angles. Distribute across all avatars in the brief. At least 4 angles must explicitly target a competitorGap or marketGap. For each angle, include suggestedFormatIds — 1 to 3 ids from the catalog whose funnel matches the angle's funnelStage.`
+          content: `BRAND BRIEF:\n${brief}${targetProductContext}\n\nGenerate exactly 20 unique, specific, testable angles. Distribute across all avatars in the brief. At least 4 angles must explicitly target a competitorGap or marketGap. For each angle, include suggestedFormatIds — 1 to 3 ids from the catalog whose funnel matches the angle's funnelStage.`
         }
       ]
     })
@@ -1849,7 +2030,7 @@ Return JSON object: { "angles": [ array of exactly 20 objects with keys: id, ava
         suggestedFormatIds = AD_FORMATS.map(f => f.id).slice(0, 3)
       }
       return {
-        ...a,
+        ...normalizeAngleSafety(a),
         id: typeof a.id === 'number' ? a.id : i + 1,
         funnelStage,
         suggestedFormatIds,
@@ -1880,7 +2061,7 @@ app.post('/api/generate-hooks', requireAuth, async (req, res) => {
   if (!await requireSessionOwnership(req, res, sessionId)) return
   if (!await requireCredits(req, res, 'generate-hooks', { projectId: sessionId, metadata: { angleId, formatId } })) return
   const session = await getSession(sessionId)
-  const angle = session.angles.find(a => a.id === angleId)
+  const angle = normalizeAngleSafety(session.angles.find(a => a.id === angleId))
   const format = AD_FORMATS.find(f => f.id === formatId)
   if (!angle || !format) return res.status(400).json({ error: 'Invalid angle or format.' })
 
@@ -1890,12 +2071,16 @@ app.post('/api/generate-hooks', requireAuth, async (req, res) => {
     bofu: 'PRODUCT-AWARE / MOST-AWARE',
   }
   const awareness = awarenessByFunnel[angle.funnelStage] || awarenessByFunnel.tofu
+  const selectedOffers = selectedOffersForFormat(session, format)
+  const hookBrandBrief = session.brandBrief
+    ? { ...session.brandBrief, currentOffers: formatUsesOffers(format) ? selectedOffers : [] }
+    : null
 
   try {
     const hooks = await generateHookCandidates({
       angle, format, awareness,
       brandVoice: session.brandBrief?.brandVoice,
-      brandBrief: session.brandBrief,
+      brandBrief: hookBrandBrief,
       sessionId,
     })
     res.json({ hooks })
@@ -1915,21 +2100,31 @@ app.post('/api/generate-ad', requireAuth, async (req, res) => {
   const { sessionId, angleId, formatId, chosenHook } = req.body
   const session = await getSession(sessionId)
 
-  const angle = session.angles.find(a => a.id === angleId)
+  const angle = normalizeAngleSafety(session.angles.find(a => a.id === angleId))
   const format = AD_FORMATS.find(f => f.id === formatId)
   if (!angle || !format) return res.status(400).json({ error: 'Invalid angle or format.' })
 
-  const brief = session.brandBrief ? JSON.stringify(session.brandBrief, null, 2) : buildDocumentContext(session.documents)
+  const selectedOffers = selectedOffersForFormat(session, format)
+  const brief = session.brandBrief
+    ? JSON.stringify({ ...session.brandBrief, currentOffers: formatUsesOffers(format) ? selectedOffers : [] }, null, 2)
+    : buildDocumentContext(session.documents)
   const brandName = session.brandName || session.brandBrief?.product?.name || 'the brand'
   const colorContext = session.brandColors.length
     ? `Brand palette: ${session.brandColors.slice(0, 6).map(c => c.hex).join(', ')}`
     : ''
-  const hasProductImage = session.brandImages.some(a => a.type === 'product' && a.higgsfieldUrl)
+  const selectedProducts = ensureSelectedProduct(session)
+  const hasProductImage = !!getSelectedProductAsset(session, a => a.higgsfieldUrl || a.dataUrl)
+  const offerContext = selectedOffers.length
+    ? `\nSELECTED ACTIVE OFFERS FOR THIS FORMAT: ${selectedOffers.join(' | ')}. Use these offers only because this format is deal/offer-oriented.\n`
+    : ''
   const productImageNote = hasProductImage && format.needsProduct
-    ? 'A product photo IS available and WILL be passed to the image model as a visual reference.'
+    ? `Product photos ARE available and WILL be passed to the image model as visual references. Target products: ${selectedProductLabel(selectedProducts)}.`
     : format.needsProduct
       ? 'No product photo uploaded. Write image prompt as pure text-to-image with detailed product description.'
       : 'This is a non-product format. Image prompt must NOT require a product reference image.'
+  const targetProductContext = selectedProducts.length
+    ? `\nTARGET PRODUCTS: ${selectedProductLabel(selectedProducts)}. Write this ad for the selected product set, not for a generic brand catalog item. If multiple products are selected, use them together only where the format and angle make that feel natural.\n`
+    : ''
 
   const adKey = `${angleId}_${formatId}`
 
@@ -2000,6 +2195,8 @@ ${brief}
 BRAND NAME: ${brandName}
 ${colorContext}
 ${productImageNote}
+${targetProductContext}
+${offerContext}
 
 ANGLE TO EXECUTE:
 Avatar: ${angle.avatar}
@@ -2277,10 +2474,11 @@ async function adaptConceptToBrand({
   const colorContext = session.brandColors.length
     ? `Brand palette: ${session.brandColors.slice(0, 6).map(c => c.hex).join(', ')}`
     : ''
-  const hasProductImage = session.brandImages?.some(a => a.type === 'product' && (a.dataUrl || a.higgsfieldUrl))
+  const selectedProducts = ensureSelectedProduct(session)
+  const hasProductImage = !!getSelectedProductAsset(session, a => a.dataUrl || a.higgsfieldUrl)
   const hasLogo = session.brandImages?.some(a => a.type === 'logo' && a.dataUrl)
   const productNote = hasProductImage
-    ? 'A product photo IS available and WILL be passed to the image model as a visual reference.'
+    ? `Product photos ARE available and WILL be passed to the image model as visual references. Target products: ${selectedProductLabel(selectedProducts)}.`
     : 'No product photo uploaded. The image will be pure text-to-image.'
 
   const awarenessByLevel = {
@@ -2460,15 +2658,16 @@ Score it. Identify the weakest section. Rewrite weak sections. Return JSON.${att
 // prompt from the finished ad copy, brand context, and format.
 async function craftImagePrompt({ copy, angle, format, session, brandName, colorContext, hasProductImage, sessionId = null }) {
   const brief = session.brandBrief ? JSON.stringify(session.brandBrief, null, 2) : ''
-  const allOffers = [
-    ...(session.manualOffers || []),
-    ...(session.brandBrief?.currentOffers || []),
-  ].filter((o, i, arr) => o && arr.indexOf(o) === i)
-  const offers = allOffers.length
-    ? `LIVE PROMOTIONS (incorporate into BOFU ad text overlays): ${allOffers.join(' | ')}`
+  const offerList = selectedOffersForFormat(session, format)
+  const offers = offerList.length
+    ? `SELECTED LIVE PROMOTIONS (incorporate into this deal/offer ad): ${offerList.join(' | ')}`
     : ''
   const palette = session.brandColors.length
     ? session.brandColors.slice(0, 6).map(c => c.hex).join(', ')
+    : ''
+  const selectedProducts = ensureSelectedProduct(session)
+  const targetProductLine = selectedProducts.length
+    ? `SELECTED TARGET PRODUCTS: ${selectedProductLabel(selectedProducts)}. Use these selected product references and do not substitute other uploaded products. If multiple products are selected, include the right subset or the set together based on the ad concept.`
     : ''
 
   // What references will be passed to the image model.
@@ -2479,12 +2678,13 @@ async function craftImagePrompt({ copy, angle, format, session, brandName, color
   //   needsProduct=false → product still appears, but contextual/subtle
   //   (in a hand, on a counter, edge of frame) for narrative TOFU formats.
   const hasLogoRef = session.brandImages?.some(a => a.type === 'logo' && a.dataUrl)
-  const hasProductRef = session.brandImages?.some(
-    a => (a.type === 'product' || a.type === 'lifestyle') && a.dataUrl
-  )
+  const productRefs = getSelectedProductAssets(session, a => a.dataUrl)
+  const hasProductRef = productRefs.length > 0
   const refList = []
   if (hasLogoRef) refList.push({ index: refList.length + 1, kind: 'LOGO', desc: 'the brand wordmark/logomark image' })
-  if (hasProductRef) refList.push({ index: refList.length + 1, kind: 'PRODUCT', desc: 'the actual product packaging/bottle/box/can' })
+  for (const productRef of productRefs) {
+    refList.push({ index: refList.length + 1, kind: 'PRODUCT', desc: `selected target product image (${productRef.name})` })
+  }
 
   // How to integrate the product depends on the format's intent.
   // Product-centric (needsProduct=true): product is the hero, large + clear,
@@ -2600,7 +2800,8 @@ OUTPUT: just the prompt text. No preamble, no JSON, no quotes around it.`,
       role: 'user',
       content: `BRAND: ${brandName}
 ${colorContext}
-${offers}${refsBlock}
+${offers}
+${targetProductLine}${refsBlock}
 ${hasProductRef
   ? format.needsProduct
     ? 'A product photo IS being passed as a visual reference. The product MUST appear in this ad (product-centric format). Anchor your prompt to the actual reference image so the generated product matches exactly. Do NOT describe an abstract or invented product.'
@@ -2647,13 +2848,13 @@ app.post('/api/regenerate-prompt', requireAuth, async (req, res) => {
   const ad = session.ads[adKey]
   if (!ad) return res.status(400).json({ error: 'Generate ad copy first.' })
 
-  const angle = session.angles.find(a => a.id === ad.angleId)
+  const angle = normalizeAngleSafety(session.angles.find(a => a.id === ad.angleId))
   const format = AD_FORMATS.find(f => f.id === ad.formatId)
   const brandName = session.brandName || session.brandBrief?.product?.name || 'the brand'
   const colorContext = session.brandColors.length
     ? `Brand palette: ${session.brandColors.slice(0, 6).map(c => c.hex).join(', ')}`
     : ''
-  const hasProductImage = session.brandImages.some(a => a.type === 'product' && a.higgsfieldUrl)
+  const hasProductImage = !!getSelectedProductAsset(session, a => a.higgsfieldUrl || a.dataUrl)
 
   try {
     const newPrompt = await craftImagePrompt({
@@ -2695,9 +2896,8 @@ app.post('/api/generate-ad-image', requireAuth, async (req, res) => {
   // that no longer offers Lifestyle as a choice).
   const refImagesForOpenAI = []
   const logoAsset = session.brandImages.find(a => a.type === 'logo' && a.dataUrl)
-  const productAsset = session.brandImages.find(
-    a => (a.type === 'product' || a.type === 'lifestyle') && a.dataUrl
-  )
+  const productAssets = getSelectedProductAssets(session, a => a.dataUrl)
+  const productAsset = productAssets[0] || null
 
   // Diagnostic: surface what we found so we can debug missing-reference issues
   console.log(`[generate-ad-image] adKey=${adKey} format=${format?.name} needsProduct=${needsProduct}`)
@@ -2712,16 +2912,16 @@ app.post('/api/generate-ad-image', requireAuth, async (req, res) => {
     if (ref) refImagesForOpenAI.push(ref)
     else console.log('  ⚠ logo dataUrl decode failed')
   }
-  if (productAsset) {
-    const ref = decodeDataUrl(productAsset.dataUrl, 'product.png')
+  for (const asset of productAssets) {
+    const ref = decodeDataUrl(asset.dataUrl, 'product.png')
     if (ref) refImagesForOpenAI.push(ref)
-    else console.log('  ⚠ product dataUrl decode failed')
+    else console.log(`  ⚠ product dataUrl decode failed for ${asset.name}`)
   }
   console.log(`  → passing ${refImagesForOpenAI.length} reference image(s) to OpenAI`)
 
   // Higgsfield uses URL-based reference (single image only)
   const productAssetForHiggs = needsProduct
-    ? (session.brandImages.find(a => a.type === 'product' && a.higgsfieldUrl) || session.brandImages.find(a => a.higgsfieldUrl))
+    ? (getSelectedProductAsset(session, a => a.higgsfieldUrl) || session.brandImages.find(a => a.higgsfieldUrl))
     : null
   const referenceImageUrl = productAssetForHiggs?.higgsfieldUrl || null
 
@@ -2986,7 +3186,7 @@ app.post('/api/rip-ad', requireAuth, upload.single('image'), async (req, res) =>
   const colorContext = session.brandColors.length
     ? `Brand palette: ${session.brandColors.slice(0, 6).map(c => c.hex).join(', ')}`
     : ''
-  const hasProductImage = session.brandImages?.some(a => a.type === 'product' && a.higgsfieldUrl)
+  const hasProductImage = !!getSelectedProductAsset(session, a => a.higgsfieldUrl || a.dataUrl)
   try {
     copy.imagePrompt = await craftImagePrompt({
       copy, angle: synthAngle, format: synthFormat, session,
@@ -3062,16 +3262,16 @@ app.post('/api/rip-ad', requireAuth, upload.single('image'), async (req, res) =>
   // Reference images (logo + product, same as /api/generate-ad-image)
   const refImagesForOpenAI = []
   const logoAsset = session.brandImages.find(a => a.type === 'logo' && a.dataUrl)
-  const productAsset = session.brandImages.find(a => (a.type === 'product' || a.type === 'lifestyle') && a.dataUrl)
+  const productAssets = getSelectedProductAssets(session, a => a.dataUrl)
   if (logoAsset) {
     const ref = decodeDataUrl(logoAsset.dataUrl, 'logo.png')
     if (ref) refImagesForOpenAI.push(ref)
   }
-  if (productAsset) {
+  for (const productAsset of productAssets) {
     const ref = decodeDataUrl(productAsset.dataUrl, 'product.png')
     if (ref) refImagesForOpenAI.push(ref)
   }
-  const productAssetForHiggs = session.brandImages.find(a => a.higgsfieldUrl)
+  const productAssetForHiggs = getSelectedProductAsset(session, a => a.higgsfieldUrl) || session.brandImages.find(a => a.higgsfieldUrl)
   const referenceImageUrl = productAssetForHiggs?.higgsfieldUrl || null
 
   const provider = (process.env.IMAGE_MODEL || 'openai').toLowerCase()
@@ -3751,6 +3951,8 @@ app.get('/api/website-content/:sessionId', requireAuth, async (req, res) => {
   res.json({
     websiteContent: session.websiteContent || null,
     manualOffers: session.manualOffers || [],
+    activeOffers: activeOffers(session),
+    selectedOfferNames: session.selectedOfferNames || [],
   })
 })
 
@@ -3762,8 +3964,32 @@ app.post('/api/manual-offers', requireAuth, async (req, res) => {
   if (!Array.isArray(offers)) return res.status(400).json({ error: 'offers must be an array of strings' })
   const session = await getSession(sessionId)
   session.manualOffers = offers.filter(o => typeof o === 'string' && o.trim()).map(o => o.trim())
+  patchBriefOffers(session)
+  ensureSelectedOffers(session)
   await saveSession(sessionId, session)
-  res.json({ ok: true, manualOffers: session.manualOffers })
+  res.json({
+    ok: true,
+    manualOffers: session.manualOffers,
+    activeOffers: activeOffers(session),
+    selectedOfferNames: session.selectedOfferNames || [],
+    brandBrief: session.brandBrief || null,
+  })
+})
+
+app.post('/api/selected-offers', requireAuth, async (req, res) => {
+  if (!await requireSessionOwnership(req, res, req.body.sessionId)) return
+  const { sessionId, offers } = req.body
+  if (!sessionId) return res.status(400).json({ error: 'sessionId required' })
+  if (!Array.isArray(offers)) return res.status(400).json({ error: 'offers must be an array of strings' })
+  const session = await getSession(sessionId)
+  const available = activeOffers(session)
+  session.selectedOfferNames = uniqueStrings(offers).filter(offer => available.includes(offer))
+  await saveSession(sessionId, session)
+  res.json({
+    ok: true,
+    activeOffers: available,
+    selectedOfferNames: session.selectedOfferNames,
+  })
 })
 
 // Get session state
@@ -3776,6 +4002,10 @@ app.get('/api/session/:sessionId', requireAuth, async (req, res) => {
     brandImages: (session.brandImages || []).map(a => ({ name: a.name, type: a.type, colors: a.colors, dataUrl: a.dataUrl, higgsfieldUrl: a.higgsfieldUrl || null })),
     brandName: session.brandName || '',
     brandBrief: session.brandBrief || null,
+    manualOffers: session.manualOffers || [],
+    activeOffers: activeOffers(session),
+    selectedOfferNames: session.selectedOfferNames || [],
+    selectedProductNames: session.selectedProductNames || [],
     angles: session.angles || [],
     ads: session.ads || {},
   })

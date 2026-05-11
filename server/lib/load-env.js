@@ -6,6 +6,11 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+function isPlaceholderEnvValue(value) {
+  return !value || /(^|[-_])your[-_]|placeholder|replace_me/i.test(value)
+}
+
 try {
   const envFile = fs.readFileSync(path.join(__dirname, '..', '.env'), 'utf8')
   for (const line of envFile.split('\n')) {
@@ -15,6 +20,8 @@ try {
     if (eq === -1) continue
     const key = trimmed.slice(0, eq).trim()
     const val = trimmed.slice(eq + 1).trim()
-    if (key && !process.env[key]) process.env[key] = val
+    if (key && (!process.env[key] || isPlaceholderEnvValue(process.env[key]))) {
+      process.env[key] = val
+    }
   }
 } catch {}

@@ -176,6 +176,11 @@ class SectionBoundary extends Component {
 }
 
 const SESSION_KEY = 'adgen_session_id'
+const uniqueStrings = (values) => [...new Set((values || []).filter(v => typeof v === 'string').map(v => v.trim()).filter(Boolean))]
+const mergeActiveOffers = (manualOffers, brandBrief) => uniqueStrings([
+  ...(manualOffers || []),
+  ...(brandBrief?.currentOffers || []),
+])
 
 // `propSessionId` (optional): supplied by Workspace as `currentProject.id`,
 // making each project its own isolated workspace. When omitted, falls back
@@ -194,6 +199,10 @@ export default function App({ sessionId: propSessionId }) {
   const [documents, setDocuments] = useState([])
   const [brandColors, setBrandColors] = useState([])
   const [brandImages, setBrandImages] = useState([])
+  const [selectedProductNames, setSelectedProductNames] = useState([])
+  const [manualOffers, setManualOffers] = useState([])
+  const [activeOffers, setActiveOffers] = useState([])
+  const [selectedOfferNames, setSelectedOfferNames] = useState([])
   const [brandName, setBrandName] = useState('')
   const [brandBrief, setBrandBrief] = useState(null)
   const [angles, setAngles] = useState([])
@@ -301,6 +310,10 @@ export default function App({ sessionId: propSessionId }) {
         setDocuments(data.documents || [])
         setBrandColors(data.brandColors || [])
         setBrandImages(data.brandImages || [])
+        setSelectedProductNames(data.selectedProductNames || (data.selectedProductName ? [data.selectedProductName] : []))
+        setManualOffers(data.manualOffers || [])
+        setActiveOffers(data.activeOffers || mergeActiveOffers(data.manualOffers, data.brandBrief))
+        setSelectedOfferNames(data.selectedOfferNames || [])
         setBrandName(data.brandName || '')
         setBrandBrief(data.brandBrief || null)
         setAngles(data.angles || [])
@@ -338,6 +351,7 @@ export default function App({ sessionId: propSessionId }) {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setBrandBrief(data.brandBrief)
+      setActiveOffers(mergeActiveOffers(manualOffers, data.brandBrief))
       refreshMe()
     } catch (e) { setError(e.message) }
     finally { setGeneratingBrief(false) }
@@ -616,8 +630,24 @@ export default function App({ sessionId: propSessionId }) {
             sessionId={sessionId}
             brandColors={brandColors}
             brandImages={brandImages}
+            selectedProductNames={selectedProductNames}
+            brandBrief={brandBrief}
+            manualOffers={manualOffers}
+            activeOffers={activeOffers}
+            selectedOfferNames={selectedOfferNames}
             brandName={brandName}
-            onChange={(colors, images) => { setBrandColors(colors); setBrandImages(images) }}
+            onChange={(colors, images, nextSelectedProductNames) => {
+              setBrandColors(colors)
+              setBrandImages(images)
+              if (nextSelectedProductNames !== undefined) setSelectedProductNames(nextSelectedProductNames || [])
+            }}
+            onSelectedProductsChange={setSelectedProductNames}
+            onOffersChange={({ manualOffers: nextManualOffers, activeOffers: nextActiveOffers, selectedOfferNames: nextSelectedOfferNames, brandBrief: nextBrandBrief }) => {
+              if (nextManualOffers !== undefined) setManualOffers(nextManualOffers || [])
+              if (nextActiveOffers !== undefined) setActiveOffers(nextActiveOffers || [])
+              if (nextSelectedOfferNames !== undefined) setSelectedOfferNames(nextSelectedOfferNames || [])
+              if (nextBrandBrief !== undefined) setBrandBrief(nextBrandBrief || null)
+            }}
             onBrandNameChange={setBrandName}
             onSessionCreated={ensureSession}
           />

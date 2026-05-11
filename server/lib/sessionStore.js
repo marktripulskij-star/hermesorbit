@@ -27,12 +27,15 @@ const EMPTY_SESSION = () => ({
   chatHistory: [],
   brandColors: [],
   brandImages: [],
+  selectedProductName: null,
+  selectedProductNames: [],
   brandName: '',
   brandBrief: null,
   angles: [],
   ads: {},
   websiteContent: null,
   manualOffers: [],
+  selectedOfferNames: [],
 })
 
 // Fill in any missing fields with defaults and normalize legacy data.
@@ -44,12 +47,31 @@ function normalize(s) {
   if (!Array.isArray(out.chatHistory)) out.chatHistory = []
   if (!Array.isArray(out.brandColors)) out.brandColors = []
   if (!Array.isArray(out.brandImages)) out.brandImages = []
+  if (typeof out.selectedProductName !== 'string') out.selectedProductName = null
+  if (!Array.isArray(out.selectedProductNames)) out.selectedProductNames = []
+  if (out.selectedProductName && !out.selectedProductNames.includes(out.selectedProductName)) {
+    out.selectedProductNames = [out.selectedProductName, ...out.selectedProductNames]
+  }
+  out.selectedProductNames = out.selectedProductNames.filter((name, i, arr) =>
+    typeof name === 'string'
+    && arr.indexOf(name) === i
+    && out.brandImages.some(a => a?.name === name && (a.type === 'product' || a.type === 'lifestyle'))
+  )
+  out.selectedProductName = out.selectedProductNames[0] || null
   if (typeof out.brandName !== 'string') out.brandName = ''
   if (out.brandBrief === undefined) out.brandBrief = null
   if (!Array.isArray(out.angles)) out.angles = []
   if (!out.ads || typeof out.ads !== 'object') out.ads = {}
   if (out.websiteContent === undefined) out.websiteContent = null
   if (!Array.isArray(out.manualOffers)) out.manualOffers = []
+  if (!Array.isArray(out.selectedOfferNames)) out.selectedOfferNames = []
+  const activeOffers = [
+    ...out.manualOffers,
+    ...(Array.isArray(out.brandBrief?.currentOffers) ? out.brandBrief.currentOffers : []),
+  ].filter((offer, i, arr) => typeof offer === 'string' && offer.trim() && arr.indexOf(offer) === i)
+  out.selectedOfferNames = out.selectedOfferNames.filter((offer, i, arr) =>
+    typeof offer === 'string' && arr.indexOf(offer) === i && activeOffers.includes(offer)
+  )
   // Normalize funnelStage on every load so legacy 'TOFU'/'MOFU'/'BOFU' work
   out.angles = out.angles.map((a, i) => ({
     ...a,

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { authedFetch } from '../lib/supabase.js'
 import './BrandPanel.css'
 
@@ -183,8 +183,9 @@ function ScrapedDataInspector({ data }) {
 }
 
 export default function BrandPanel({
-  sessionId, brandColors, brandImages, brandName,
-  onChange, onBrandNameChange, onSessionCreated
+  sessionId, brandColors, brandImages, selectedProductNames = [], brandBrief,
+  manualOffers = [], activeOffers = [], selectedOfferNames = [], brandName,
+  onChange, onSelectedProductsChange, onOffersChange, onBrandNameChange, onSessionCreated
 }) {
   const imgInputRef = useRef()
   const [uploading, setUploading] = useState(false)
@@ -192,7 +193,7 @@ export default function BrandPanel({
   const [scraping, setScraping] = useState(false)
   const [scrapeProgress, setScrapeProgress] = useState('')
   const [scrapeSummary, setScrapeSummary] = useState(null)
-  const [manualOffers, setManualOffers] = useState('')
+  const [manualOffersText, setManualOffersText] = useState('')
   const [savingOffers, setSavingOffers] = useState(false)
   const [inspectorOpen, setInspectorOpen] = useState(false)
   const [inspectorData, setInspectorData] = useState(null)
@@ -201,6 +202,12 @@ export default function BrandPanel({
   const [toast, setToast] = useState(null)
   const [nameInput, setNameInput] = useState(brandName || '')
   const [nameSaving, setNameSaving] = useState(false)
+  const selectedSet = new Set(selectedProductNames)
+  const selectedOfferSet = new Set(selectedOfferNames)
+
+  useEffect(() => {
+    setManualOffersText((manualOffers || []).join('\n'))
+  }, [manualOffers])
 
   const showToast = (msg, isError = false) => {
     setToast({ msg, isError })
@@ -221,7 +228,7 @@ export default function BrandPanel({
       if (data.sessionId && data.sessionId !== sessionId && onSessionCreated) {
         onSessionCreated(data.sessionId)
       }
-      onChange(data.brandColors, data.brandImages)
+      onChange(data.brandColors, data.brandImages, data.selectedProductNames || [])
       showToast(`${data.added.length} image${data.added.length > 1 ? 's' : ''} added`)
     } catch (e) {
       setError(e.message)
@@ -314,7 +321,7 @@ export default function BrandPanel({
     setSavingOffers(true)
     setError(null)
     try {
-      const lines = manualOffers.split('\n').map(l => l.trim()).filter(Boolean)
+      const lines = manualOffersText.split('\n').map(l => l.trim()).filter(Boolean)
       const res = await authedFetch('/api/manual-offers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -322,6 +329,12 @@ export default function BrandPanel({
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
+      onOffersChange?.({
+        manualOffers: data.manualOffers || lines,
+        activeOffers: data.activeOffers || [],
+        selectedOfferNames: data.selectedOfferNames || [],
+        brandBrief: data.brandBrief,
+      })
       showToast(`${lines.length} offer${lines.length === 1 ? '' : 's'} saved`)
     } catch (e) {
       setError(e.message)
@@ -330,11 +343,38 @@ export default function BrandPanel({
     }
   }
 
+  const toggleOfferTarget = async (offer) => {
+    if (!offer) return
+    const previousOfferNames = [...selectedOfferNames]
+    const nextOfferNames = selectedOfferSet.has(offer)
+      ? selectedOfferNames.filter(o => o !== offer)
+      : [...selectedOfferNames, offer]
+    onOffersChange?.({ selectedOfferNames: nextOfferNames })
+    setError(null)
+    if (!sessionId) return
+    try {
+      const res = await authedFetch('/api/selected-offers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, offers: nextOfferNames }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      onOffersChange?.({
+        activeOffers: data.activeOffers || activeOffers,
+        selectedOfferNames: data.selectedOfferNames || [],
+      })
+    } catch (e) {
+      onOffersChange?.({ selectedOfferNames: previousOfferNames })
+      setError(e.message)
+    }
+  }
+
   const removeImage = async (name) => {
     try {
       const res = await authedFetch(`/api/brand-assets/${sessionId}/${encodeURIComponent(name)}`, { method: 'DELETE' })
       const data = await res.json()
-      onChange(data.brandColors, data.brandImages)
+      onChange(data.brandColors, data.brandImages, data.selectedProductNames || [])
     } catch (e) {
       setError(e.message)
     }
@@ -342,14 +382,54 @@ export default function BrandPanel({
 
   const cycleType = async (img, type) => {
     if (!sessionId) return
+    const previousImages = brandImages
+    const previousSelectedProductNames = selectedProductNames
+    const nextImages = brandImages.map(a => a.name === img.name ? { ...a, type } : a)
+    const nextSelectedProductNames = type === 'logo'
+      ? selectedProductNames.filter(name => name !== img.name)
+      : selectedProductNames
+    onChange(brandColors, nextImages, nextSelectedProductNames)
+    setError(null)
     try {
-      await authedFetch(`/api/brand-assets/${sessionId}/${encodeURIComponent(img.name)}/type`, {
+      const res = await authedFetch(`/api/brand-assets/${sessionId}/${encodeURIComponent(img.name)}/type`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type }),
       })
-      onChange(brandColors, brandImages.map(a => a.name === img.name ? { ...a, type } : a))
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || 'Could not update asset type')
+      onChange(
+        data.brandColors || brandColors,
+        data.brandImages || nextImages,
+        data.selectedProductNames || nextSelectedProductNames
+      )
     } catch (e) {
+      onChange(brandColors, previousImages, previousSelectedProductNames)
+      setError(e.message)
+    }
+  }
+
+  const toggleProductTarget = async (img) => {
+    if (!img || !(img.type === 'product' || img.type === 'lifestyle')) return
+    const previousProductNames = [...selectedProductNames]
+    const nextProductNames = selectedSet.has(img.name)
+      ? selectedProductNames.filter(name => name !== img.name)
+      : [...selectedProductNames, img.name]
+    onSelectedProductsChange?.(nextProductNames)
+    setError(null)
+    if (!sessionId) return
+    try {
+      const res = await authedFetch('/api/selected-products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, productNames: nextProductNames }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      onSelectedProductsChange?.(data.selectedProductNames || [])
+      showToast('Target products updated')
+    } catch (e) {
+      onSelectedProductsChange?.(previousProductNames)
       setError(e.message)
     }
   }
@@ -428,38 +508,57 @@ export default function BrandPanel({
       {/* Uploaded images */}
       {brandImages.length > 0 && (
         <div className="brand-images">
-          {brandImages.map(img => (
-            <div key={img.name} className="brand-img-item">
-              <img src={img.dataUrl} alt={img.name} className="brand-thumb" />
-              <div className="brand-img-info">
-                <div className="brand-type-selector">
-                  {TYPES.map(t => {
-                    // Treat legacy 'lifestyle' as Product visually
-                    const isActive = img.type === t || (t === 'product' && img.type === 'lifestyle')
-                    return (
-                      <button
-                        key={t}
-                        className={`type-opt ${isActive ? 'active' : ''}`}
-                        onClick={() => cycleType(img, t)}
-                      >
-                        {TYPE_LABEL[t]}
-                      </button>
-                    )
-                  })}
+          {brandImages.map(img => {
+            const isProduct = img.type === 'product' || img.type === 'lifestyle'
+            const isTarget = selectedSet.has(img.name)
+            return (
+              <div
+                key={img.name}
+                className={`brand-img-item ${isTarget ? 'target-active' : ''}`}
+              >
+                {isProduct && (
+                  <label className="target-checkbox" title="Use this product as a target">
+                    <input
+                      type="checkbox"
+                      checked={isTarget}
+                      onChange={() => toggleProductTarget(img)}
+                    />
+                  </label>
+                )}
+                <img src={img.dataUrl} alt={img.name} className="brand-thumb" />
+                <div className="brand-img-info">
+                  <div className="brand-type-selector">
+                    {TYPES.map(t => {
+                      // Treat legacy 'lifestyle' as Product visually
+                      const isActive = img.type === t || (t === 'product' && img.type === 'lifestyle')
+                      return (
+                        <button
+                          key={t}
+                          className={`type-opt ${isActive ? 'active' : ''}`}
+                          onClick={() => cycleType(img, t)}
+                        >
+                          {TYPE_LABEL[t]}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <span className="brand-img-name" title={img.name}>{img.name}</span>
+                  <div className="brand-img-colors">
+                    {(img.colors || []).slice(0, 5).map(c => (
+                      <span key={c.hex} className="mini-swatch" style={{ background: c.hex }} title={c.hex} />
+                    ))}
+                    {img.higgsfieldUrl && (
+                      <span className="ref-indicator" title="Image will be used as reference in generation">✓ ref</span>
+                    )}
+                    {isTarget && (
+                      <span className="ref-indicator target-ref" title="Selected target product">target</span>
+                    )}
+                  </div>
                 </div>
-                <span className="brand-img-name" title={img.name}>{img.name}</span>
-                <div className="brand-img-colors">
-                  {(img.colors || []).slice(0, 5).map(c => (
-                    <span key={c.hex} className="mini-swatch" style={{ background: c.hex }} title={c.hex} />
-                  ))}
-                  {img.higgsfieldUrl && (
-                    <span className="ref-indicator" title="Image will be used as reference in generation">✓ ref</span>
-                  )}
-                </div>
+                <button className="brand-img-remove" onClick={() => removeImage(img.name)} title="Remove">✕</button>
               </div>
-              <button className="brand-img-remove" onClick={() => removeImage(img.name)} title="Remove">✕</button>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
@@ -494,23 +593,41 @@ export default function BrandPanel({
       )}
       {inspectorOpen && inspectorData && <ScrapedDataInspector data={inspectorData} />}
 
-      {/* Manual offers — for Kaching/Rebuy/custom-liquid pricing the static crawl can't see */}
+      {/* Offers — manually added + extracted from the brand brief */}
       <div className="brand-section-header" style={{ marginTop: 14 }}>
-        <span className="brand-section-title">Active Offers (manual)</span>
+        <span className="brand-section-title">Active Offers</span>
+        {activeOffers.length > 0 && <span className="doc-count">{activeOffers.length}</span>}
       </div>
       <div className="manual-offers-help">
-        Paste current promos the crawler may have missed (Kaching bundles, subscribe & save, etc.). One per line.
+        Check the offers to use in deal-focused ads. Paste new promos below, one per line.
       </div>
+      {activeOffers.length > 0 && (
+        <div className="active-offer-list">
+          {activeOffers.map(offer => {
+            const isSelected = selectedOfferSet.has(offer)
+            return (
+              <label key={offer} className={`active-offer-item ${isSelected ? 'selected' : ''}`}>
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => toggleOfferTarget(offer)}
+                />
+                <span>{offer}</span>
+              </label>
+            )
+          })}
+        </div>
+      )}
       <textarea
         className="manual-offers-textarea"
-        value={manualOffers}
-        onChange={e => setManualOffers(e.target.value)}
+        value={manualOffersText}
+        onChange={e => setManualOffersText(e.target.value)}
         placeholder={'Buy 2 Get 1 Free on bundles\nSubscribe & save 15%\nFree shipping over $75'}
         rows={3}
         data-gramm="false"
       />
-      <button className="manual-offers-save" onClick={saveManualOffers} disabled={savingOffers || !manualOffers.trim()}>
-        {savingOffers ? 'Saving…' : 'Save offers to brief'}
+      <button className="manual-offers-save" onClick={saveManualOffers} disabled={savingOffers}>
+        {savingOffers ? 'Saving…' : 'Save offers'}
       </button>
 
       {/* Brand color palette */}
